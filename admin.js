@@ -58,9 +58,25 @@ import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/fireba
 		try {
 			let imageUrl = null;
 			if (imageFile) {
-				const imageRef = ref(storage, `menu-images/${Date.now()}_${imageFile.name}`);
-				await uploadBytes(imageRef, imageFile);
-				imageUrl = await getDownloadURL(imageRef);
+				try {
+					const timestamp = Date.now();
+					const fileName = `menu-images/${timestamp}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+					const imageRef = ref(storage, fileName);
+					
+					const metadata = {
+						contentType: imageFile.type,
+						customMetadata: {
+							'origin': 'https://nfccloud.github.io'
+						}
+					};
+					
+					await uploadBytes(imageRef, imageFile, metadata);
+					imageUrl = await getDownloadURL(imageRef);
+				} catch (uploadError) {
+					console.error('Upload error:', uploadError);
+					showErrorNotification('Σφάλμα κατά το ανέβασμα της εικόνας. Παρακαλώ δοκιμάστε ξανά.');
+					throw uploadError;
+				}
 			}
 
 			if (editingId) {
