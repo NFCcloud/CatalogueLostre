@@ -1,30 +1,21 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Μενού - Εστιατόριο</title>
-  <link href="./dist/output.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Μενού - Εστιατόριο</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-    .loading { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: .5; }
-    }
-  </style>
-
   <script>
-    // Initialize Supabase client directly
-    const SUPABASE_URL = 'https://wwoejvzxdcrhxhdjeqqc.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b2Vqdnp4ZGNyaHhoZGplcXFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NTYzNzQsImV4cCI6MjA3MjIzMjM3NH0.xoKLN1_AyP-KG_x977PTiuumYlLtkk5-FM3LGaWhzdk';
-    window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseUrl = 'https://wwoejvzxdcrhxhdjeqqc.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b2Vqdnp4ZGNyaHhoZGplcXFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NTYzNzQsImV4cCI6MjA3MjIzMjM3NH0.xoKLN1_AyP-KG_x977PTiuumYlLtkk5-FM3LGaWhzdk';
+    const { createClient } = supabase;
+    window.supabaseClient = createClient(supabaseUrl, supabaseKey);
   </script>
-  
-  <script type="module" src="public/js/menu.js"></script>
 </head>
 <body class="bg-gray-50">
   <!-- Loading State -->
@@ -42,35 +33,24 @@
     </div>
   </div>
 
-  <!-- Main Content -->
-  <div id="menu-content" class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 hidden">
-    <div class="flex flex-col md:flex-row gap-8">
-      <!-- Left Sidebar -->
-      <div id="left-sidebar" class="w-full md:w-1/4">
-        <div id="main-categories" class="flex justify-around md:flex-col gap-2 mb-4">
-          <!-- Main category buttons will be injected here -->
-        </div>
-        <div id="sub-categories" class="space-y-2">
-          <!-- Sub-category list will be injected here -->
-        </div>
-      </div>
-
-      <!-- Right Content -->
-      <div id="menu-items" class="w-full md:w-3/4">
-        <!-- Menu items will be injected here -->
-      </div>
-    </div>
+  <!-- Menu Container -->
+  <div id="menuContainer" class="max-w-md mx-auto pb-6 hidden">
+    <!-- Menu items will be loaded here -->
   </div>
 
   <!-- Error State -->
-  <div id="errorState" class="min-h-screen flex items-center justify-center hidden">
-    <div class="text-center bg-white p-8 rounded-lg shadow-md">
-      <div class="text-4xl mb-4">😢</div>
-      <h3 class="text-lg font-medium text-gray-800 mb-2">Σφάλμα φόρτωσης</h3>
-      <p class="text-gray-600">Δεν ήταν δυνατή η φόρτωση του μενού. Παρακαλώ δοκιμάστε ξανά αργότερα.</p>
+  <div id="errorState" class="hidden min-h-screen flex items-center justify-center p-4">
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md w-full text-center">
+      <div class="text-red-600 text-4xl mb-4">⚠️</div>
+      <h3 class="text-lg font-medium text-red-800 mb-2">Σφάλμα Φόρτωσης</h3>
+      <p class="text-sm text-red-700 mb-4">Δεν μπορούμε να φορτώσουμε το μενού αυτή τη στιγμή.</p>
+      <button onclick="location.reload()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+        Επανάληψη
+      </button>
     </div>
   </div>
 
-  <script type="module" src="public/js/menu.js"></script>
+  <script type="module" src="./js/supabase-config.js"></script>
+  <script type="module" src="./js/menu.js"></script>
 </body>
 </html>
