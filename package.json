@@ -4,9 +4,8 @@
   "description": "Restaurant Menu Management System with Admin Panel",
   "main": "server/app.js",
   "scripts": {
-    "start": "node server/app.js",
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vite & npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
+    "build": "vite build & npx tailwindcss -i ./src/input.css -o ./dist/output.css",
     "test": "jest",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
