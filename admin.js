@@ -1,17 +1,6 @@
 
-import { db, storage } from './firebase-config.js';
-import {
-	collection,
-	addDoc,
-	updateDoc,
-	deleteDoc,
-	doc,
-	query,
-	orderBy,
-	onSnapshot,
-	serverTimestamp
-} from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js';
-import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-storage.js';
+// Import Firebase services
+import { db, storage, storageRef } from './firebase-config.js';
 
 	const form = document.getElementById('addFoodForm');
 	const menuItemsList = document.getElementById('menuItemsList');
@@ -61,17 +50,14 @@ import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/fireba
 				try {
 					const timestamp = Date.now();
 					const fileName = `menu-images/${timestamp}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-					const imageRef = ref(storage, fileName);
+					const imageRef = storage.ref(fileName);
 					
 					const metadata = {
-						contentType: imageFile.type,
-						customMetadata: {
-							'origin': 'https://nfccloud.github.io'
-						}
+						contentType: imageFile.type
 					};
 					
-					await uploadBytes(imageRef, imageFile, metadata);
-					imageUrl = await getDownloadURL(imageRef);
+					await imageRef.put(imageFile, metadata);
+					imageUrl = await imageRef.getDownloadURL();
 				} catch (uploadError) {
 					console.error('Upload error:', uploadError);
 					showErrorNotification('Σφάλμα κατά το ανέβασμα της εικόνας. Παρακαλώ δοκιμάστε ξανά.');

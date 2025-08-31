@@ -11,15 +11,7 @@ const firebaseConfig = {
 // Initialize Firebase with compat version
 firebase.initializeApp(firebaseConfig);
 
-// Configure Firebase Storage
-const storage = firebase.storage();
-const storageRef = storage.ref();
-
-// Enable long-lived operations
-storage.maxOperationRetryTime = 120000; // 2 minutes
-storage.maxUploadRetryTime = 120000; // 2 minutes
-
 // Export Firebase services
 export const db = firebase.firestore();
 export const auth = firebase.auth();
-export { storage, storageRef };
+export const storage = firebase.storage();
