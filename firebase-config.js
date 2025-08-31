@@ -9,9 +9,22 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase with compat version
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+// Get Firebase service instances
+const firestore = firebase.firestore();
+const auth = firebase.auth();
+const storage = firebase.storage();
+
+// Configure Firestore
+firestore.settings({ experimentalForceLongPolling: true });
+
+// Configure Storage
+storage.setMaxUploadRetryTime(30000);
+storage.setMaxOperationRetryTime(30000);
 
 // Export Firebase services
-export const db = firebase.firestore();
-export const auth = firebase.auth();
-export const storage = firebase.storage();
+export const db = firestore;
+export { auth, storage };

@@ -49,19 +49,30 @@ import { db, storage } from './firebase-config.js';
 			let imageUrl = null;
 			if (imageFile) {
 				try {
+					// Wait for auth to be ready
+					await new Promise((resolve) => {
+						const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+							unsubscribe();
+							resolve(user);
+						});
+					});
+
 					const timestamp = Date.now();
-					const fileName = `menu-images/${timestamp}_${imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+					const safeFileName = imageFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
+					const fileName = `menu-images/${timestamp}_${safeFileName}`;
 					const imageRef = storage.ref(fileName);
 					
 					const metadata = {
-						contentType: imageFile.type
+						contentType: imageFile.type,
+						cacheControl: 'public,max-age=7200'
 					};
 					
 					await imageRef.put(imageFile, metadata);
 					imageUrl = await imageRef.getDownloadURL();
+					showNotification('Η εικόνα ανέβηκε επιτυχώς! 🖼️');
 				} catch (uploadError) {
 					console.error('Upload error:', uploadError);
-					showErrorNotification('Σφάλμα κατά το ανέβασμα της εικόνας. Παρακαλώ δοκιμάστε ξανά.');
+					showErrorNotification('Σφάλμα κατά το ανέβασμα της εικόνας: ' + uploadError.message);
 					throw uploadError;
 				}
 			}

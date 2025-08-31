@@ -15,8 +15,17 @@
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-storage-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js" type="module"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-storage.js" type="module"></script>
+  
+  <!-- Initialize Firebase Auth -->
+  <script>
+    window.onload = function() {
+      // Sign in anonymously to allow Storage operations
+      firebase.auth().signInAnonymously()
+        .catch(function(error) {
+          console.error("Auth Error:", error);
+        });
+    }
+  </script>
   
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
