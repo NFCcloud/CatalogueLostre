@@ -10,8 +10,8 @@ import {
 	orderBy,
 	onSnapshot,
 	serverTimestamp
-} from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+} from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js';
+import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-storage.js';
 
 	const form = document.getElementById('addFoodForm');
 	const menuItemsList = document.getElementById('menuItemsList');
