@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Μενού - Εστιατόριο</title>
   <link href="./dist/output.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0"></script>
   
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -20,8 +20,12 @@
   <script>
     const supabaseUrl = 'https://wwoejvzxdcrhxhdjeqqc.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b2Vqdnp4ZGNyaHhoZGplcXFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NTYzNzQsImV4cCI6MjA3MjIzMjM3NH0.xoKLN1_AyP-KG_x977PTiuumYlLtkk5-FM3LGaWhzdk';
-    const { createClient } = supabase;
-    window.supabaseClient = createClient(supabaseUrl, supabaseKey);
+    
+    // Single instance of Supabase client
+    if (!window.supabaseClient) {
+      const { createClient } = supabase;
+      window.supabaseClient = createClient(supabaseUrl, supabaseKey);
+    }
 
     // Enable more detailed error logging for Supabase operations
     window.supabaseClient.handleFailure = (error) => {

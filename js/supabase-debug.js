@@ -2,7 +2,11 @@
 const supabaseDebug = {
   async testConnection() {
     try {
-      const { data, error } = await window.supabaseClient.from('menu_items').select('count(*)');
+      // Test connection with a simple select
+      const { data, error } = await window.supabaseClient
+        .from('menu_items')
+        .select('id')
+        .limit(1);
       
       if (error) {
         console.error('🔴 Database Connection Error:', error);
