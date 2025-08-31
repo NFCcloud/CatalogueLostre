@@ -1,4 +1,4 @@
-import { supabase } from './supabase-config.js';
+const supabase = window.supabaseClient;
 
 class MenuManager {
   constructor() {
@@ -67,32 +67,26 @@ class MenuManager {
       const categoryItems = this.menuItems.filter(item => item.category === category);
 
       const categorySection = document.createElement('div');
-      categorySection.className = 'bg-white mb-4 rounded-lg shadow-sm';
+      categorySection.className = 'mb-8 px-4';
       categorySection.innerHTML = `
-        <div class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
-          <h2 class="text-lg font-bold text-gray-800">${category}</h2>
-        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">
+          ${category}
+        </h2>
+        <div class="grid gap-6">
       `;
 
-      categoryItems.forEach((item, index) => {
+      categoryItems.forEach(item => {
         const itemDiv = document.createElement('div');
-        itemDiv.className = `p-4 ${index < categoryItems.length - 1 ? 'border-b border-gray-100' : ''}`;
+        itemDiv.className = 'bg-white rounded-lg shadow p-4 flex justify-between items-start';
         itemDiv.innerHTML = `
-          <div class="flex gap-3">
-            <div class="flex-1">
-              <h3 class="font-semibold text-gray-800 mb-1">${item.name}</h3>
-              <p class="text-sm text-gray-600 mb-2 leading-relaxed">${item.description}</p>
-              <p class="text-lg font-bold text-blue-600">€${parseFloat(item.price).toFixed(2)}</p>
+          <div class="flex-1">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="font-bold text-gray-800">${item.name}</h3>
+              <span class="font-bold text-green-600 ml-4">€${parseFloat(item.price).toFixed(2)}</span>
             </div>
-            <div class="flex-shrink-0">
-              <img
-                src="${item.image_url || 'https://via.placeholder.com/160x128?text=No+Image'}"
-                alt="${item.name}"
-                class="w-20 h-16 object-cover rounded-lg"
-                loading="lazy"
-                onerror="this.src='https://via.placeholder.com/160x128?text=No+Image'"
-              />
-            </div>
+            ${item.description ? `
+              <p class="text-sm text-gray-600 mt-1">${item.description}</p>
+            ` : ''}
           </div>
         `;
         categorySection.appendChild(itemDiv);

@@ -43,28 +43,45 @@
 
   <div class="max-w-xl mx-auto py-8">
     <h1 class="text-2xl font-bold mb-6 text-center">Διαχείριση Μενού</h1>
-    <form id="addFoodForm" class="bg-white rounded-lg shadow p-6 mb-8">
+    <form id="menuForm" class="bg-white rounded-lg shadow p-6 mb-8">
+      <input type="hidden" id="editingId" name="editingId" value="" />
+      <input type="hidden" id="imageUrl" name="imageUrl" value="" />
+      
       <div class="mb-4">
         <label class="block mb-1 font-medium">Όνομα Πιάτου</label>
-        <input type="text" id="foodName" class="w-full border rounded px-3 py-2" required />
+        <input type="text" id="name" name="name" class="w-full border rounded px-3 py-2" required />
       </div>
       <div class="mb-4">
         <label class="block mb-1 font-medium">Περιγραφή</label>
-        <textarea id="foodDescription" class="w-full border rounded px-3 py-2" required></textarea>
+        <textarea id="description" name="description" class="w-full border rounded px-3 py-2" required></textarea>
       </div>
       <div class="mb-4">
         <label class="block mb-1 font-medium">Τιμή (€)</label>
-        <input type="number" id="foodPrice" class="w-full border rounded px-3 py-2" step="0.01" min="0" required />
+        <input type="number" id="price" name="price" class="w-full border rounded px-3 py-2" step="0.01" min="0" required />
       </div>
       <div class="mb-4">
         <label class="block mb-1 font-medium">Κατηγορία</label>
-        <input type="text" id="foodCategory" class="w-full border rounded px-3 py-2" required />
+        <select id="category" name="category" class="w-full border rounded px-3 py-2" required>
+          <option value="">Επιλέξτε κατηγορία</option>
+          <option value="Ορεκτικά">Ορεκτικά</option>
+          <option value="Σαλάτες">Σαλάτες</option>
+          <option value="Κυρίως Πιάτα">Κυρίως Πιάτα</option>
+          <option value="Επιδόρπια">Επιδόρπια</option>
+          <option value="Ποτά">Ποτά</option>
+        </select>
       </div>
       <div class="mb-4">
         <label class="block mb-1 font-medium">Φωτογραφία</label>
-        <input type="file" id="foodImage" accept="image/*" class="w-full" required />
+        <input type="file" id="image" name="image" accept="image/*" class="w-full" />
       </div>
-      <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Προσθήκη Πιάτου</button>
+      <div class="flex space-x-4">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+          Αποθήκευση
+        </button>
+        <button type="button" id="cancelBtn" class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 hidden">
+          Ακύρωση
+        </button>
+      </div>
     </form>
     <div id="menuItemsList"></div>
   </div>

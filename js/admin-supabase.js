@@ -20,6 +20,7 @@ function showNotification(message, type = 'success') {
 
 async function handleFormSubmit(event) {
   event.preventDefault();
+  console.log('Form submission started');
   
   const form = event.target;
   const name = form.name.value.trim();
@@ -27,14 +28,16 @@ async function handleFormSubmit(event) {
   const price = parseFloat(form.price.value);
   const category = form.category.value.trim();
   const imageFile = form.image.files[0];
-  const currentImageUrl = form.imageUrl.value;
+  const currentImageUrl = form.imageUrl ? form.imageUrl.value : '';
 
   try {
+    console.log('Processing form data:', { name, description, price, category });
+    
     let imageUrl = currentImageUrl;
     if (imageFile) {
+      console.log('Uploading image file...');
       imageUrl = await uploadFile(imageFile);
-    } else if (!editingId && !currentImageUrl) {
-      throw new Error('Παρακαλώ επιλέξτε μια εικόνα.');
+      console.log('Image uploaded successfully:', imageUrl);
     }
 
     const itemData = {
@@ -42,29 +45,42 @@ async function handleFormSubmit(event) {
       description,
       price,
       category,
-      image_url: imageUrl,
+      image_url: imageUrl || null,
       updated_at: new Date().toISOString()
     };
 
+    console.log('Preparing to save data:', itemData);
+
     if (editingId) {
-      const { error } = await supabase
+      console.log('Updating existing item:', editingId);
+      const { data, error } = await supabase
         .from('menu_items')
         .update(itemData)
-        .eq('id', editingId);
+        .eq('id', editingId)
+        .select();
 
       if (error) throw error;
       showNotification('Το πιάτο ενημερώθηκε επιτυχώς! 👍');
     } else {
-      const { error } = await supabase
+      console.log('Creating new item');
+      const newItem = {
+        ...itemData,
+        is_active: true,
+        sort_order: Date.now(),
+        created_at: new Date().toISOString()
+      };
+      
+      console.log('New item data:', newItem);
+      
+      const { data, error } = await supabase
         .from('menu_items')
-        .insert([{
-          ...itemData,
-          is_active: true,
-          sort_order: Date.now(),
-          created_at: new Date().toISOString()
-        }]);
+        .insert([newItem])
+        .select();
+
+      console.log('Insert response:', { data, error });
 
       if (error) throw error;
+      if (data) console.log('Saved successfully:', data[0]);
       showNotification('Το πιάτο προστέθηκε επιτυχώς! ✨');
     }
 
