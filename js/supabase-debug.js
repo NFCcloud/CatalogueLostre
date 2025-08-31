@@ -3,7 +3,7 @@ const supabaseDebug = {
   async testConnection() {
     try {
       // Test connection with a simple select
-      const { data, error } = await window.supabaseClient
+      const { data, error } = await window.supabase
         .from('menu_items')
         .select('id')
         .limit(1);
@@ -44,7 +44,7 @@ const supabaseDebug = {
         console.log(`Testing access to ${table} table...`);
         
         // Test SELECT
-        const { data: selectData, error: selectError } = await window.supabaseClient
+        const { data: selectData, error: selectError } = await window.supabase
           .from(table)
           .select('*')
           .limit(1);
@@ -69,7 +69,7 @@ const supabaseDebug = {
   async getTableStructure(tableName) {
     try {
       // This requires database admin privileges
-      const { data, error } = await window.supabaseClient.rpc('get_table_structure', {
+      const { data, error } = await window.supabase.rpc('get_table_structure', {
         table_name: tableName
       });
 
@@ -91,19 +91,19 @@ const supabaseDebug = {
       const queries = [
         {
           name: 'Basic Select',
-          fn: () => window.supabaseClient.from('menu_items').select('*').limit(1)
+          fn: () => window.supabase.from('menu_items').select('*').limit(1)
         },
         {
           name: 'Filter Active Items',
-          fn: () => window.supabaseClient.from('menu_items').select('*').eq('is_active', true).limit(1)
+          fn: () => window.supabase.from('menu_items').select('*').eq('is_active', true).limit(1)
         },
         {
           name: 'Category Group',
-          fn: () => window.supabaseClient.from('menu_items').select('category').eq('is_active', true)
+          fn: () => window.supabase.from('menu_items').select('category').eq('is_active', true)
         },
         {
           name: 'Subcategory Filter',
-          fn: () => window.supabaseClient.from('menu_items').select('*').eq('category', 'coffee_menu').eq('subcategory', 'coffee').limit(1)
+          fn: () => window.supabase.from('menu_items').select('*').eq('category', 'coffee_menu').eq('subcategory', 'coffee').limit(1)
         }
       ];
 
@@ -135,7 +135,7 @@ const supabaseDebug = {
     try {
       console.log('🔄 Setting up realtime monitoring...');
       
-      const subscription = window.supabaseClient
+      const subscription = window.supabase
         .channel('menu_changes')
         .on('postgres_changes', 
           { 
