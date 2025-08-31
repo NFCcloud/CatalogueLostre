@@ -1,3 +1,4 @@
+// No import! Use window.supabase directly
 
 class MenuManager {
 	constructor() {
@@ -39,7 +40,7 @@ class MenuManager {
 	}
 
 	setupRealTimeUpdates() {
-		const channel = window.supabase
+		window.supabase
 			.channel('menu_changes')
 			.on('postgres_changes', 
 				{
@@ -52,7 +53,6 @@ class MenuManager {
 				}
 			)
 			.subscribe();
-	}
 	}
 
 	renderMenu() {
