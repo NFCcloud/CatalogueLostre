@@ -109,6 +109,16 @@ async function renderMenuItems() {
       .from('menu_items')
       .select('*')
       .order('sort_order', { ascending: true });
+    
+    if (error) {
+      console.error('Error fetching menu items:', error);
+      if (error.code === '42P01') {  // Table doesn't exist error
+        showErrorNotification('Η βάση δεδομένων δεν έχει ρυθμιστεί σωστά. Παρακαλώ επικοινωνήστε με τον διαχειριστή.');
+      } else {
+        showErrorNotification('Σφάλμα φόρτωσης μενού: ' + error.message);
+      }
+      return;
+    }
 
     if (error) throw error;
 

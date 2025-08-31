@@ -6,6 +6,20 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
+// Test database connection
+async function testConnection() {
+  const { data, error } = await supabase
+    .from('menu_items')
+    .select('count(*)')
+  
+  if (error) {
+    console.error('Database connection error:', error)
+    return false
+  }
+  console.log('Database connected successfully')
+  return true
+}
+
 // Helper function for file upload
 export async function uploadFile(file, bucket = 'menu-images') {
   try {
