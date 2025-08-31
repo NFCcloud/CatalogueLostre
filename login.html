@@ -6,9 +6,23 @@
   <title>Είσοδος στο Διαχειριστικό - Lostre</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/debug-tools.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     body { font-family: 'Inter', sans-serif; }
+    .notification {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      animation: slideIn 0.3s ease-out;
+      z-index: 50;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
@@ -59,12 +73,27 @@
     </div>
   </div>
 
+  <div id="notificationContainer"></div>
+
   <script type="module">
     const SUPABASE_URL = 'https://wwoejvzxdcrhxhdjeqqc.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b2Vqdnp4ZGNyaHhoZGplcXFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NTYzNzQsImV4cCI6MjA3MjIzMjM3NH0.xoKLN1_AyP-KG_x977PTiuumYlLtkk5-FM3LGaWhzdk';
 
-    const { createClient } = supabase;
+    const { createClient } = window.supabase;
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Initialize debugging tools
+    SupabaseDebugger.setupNetworkMonitoring();
+    SupabaseDebugger.monitorAuthEvents(supabaseClient);
+
+    // Show notification helper
+    function showNotification(message, type = 'error') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+        notification.textContent = message;
+        document.getElementById('notificationContainer').appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
 
     const form = document.getElementById('loginForm');
     const errorMessage = document.getElementById('errorMessage');
@@ -72,6 +101,7 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      console.group('🔐 Login Attempt');
       
       // Clear previous error
       errorMessage.classList.add('hidden');
@@ -79,14 +109,30 @@
       submitButton.textContent = 'Παρακαλώ περιμένετε...';
       
       try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-          email: form.email.value,
-          password: form.password.value
+        const email = form.email.value;
+        const password = form.password.value;
+
+        console.log('Attempting login with:', { 
+          email, 
+          passwordLength: password.length,
+          timestamp: new Date().toISOString()
         });
 
-        if (error) {
-          throw error;
-        }
+        // Validate connection before attempting login
+        await SupabaseDebugger.checkSupabaseConnection(supabaseClient);
+        
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        console.log('Auth Response:', { 
+          success: !!data?.user,
+          error: error?.message,
+          user: data?.user ? data.user.id : null
+        });
+
+        if (error) throw error;
 
         if (data.user) {
           // Check if user is admin
@@ -96,19 +142,34 @@
             .eq('id', data.user.id)
             .single();
 
-          if (profileError || profile?.role !== 'admin') {
+          console.log('Profile Check:', {
+            profile,
+            error: profileError?.message
+          });
+
+          if (profileError) {
+            throw new Error('Σφάλμα κατά τον έλεγχο δικαιωμάτων.');
+          }
+
+          if (profile?.role !== 'admin') {
             throw new Error('Δεν έχετε δικαιώματα πρόσβασης στο διαχειριστικό.');
           }
 
-          // Successful login - redirect to admin panel
-          window.location.href = 'admin.html';
+          // Successful login
+          showNotification('Επιτυχής σύνδεση!', 'success');
+          setTimeout(() => {
+            window.location.href = 'admin.html';
+          }, 1000);
         }
       } catch (error) {
-        console.error('Login error:', error);
+        console.error('Login failed:', error);
+        showNotification(error.message || 'Σφάλμα κατά την είσοδο');
         errorMessage.textContent = error.message || 'Σφάλμα κατά την είσοδο. Παρακαλώ δοκιμάστε ξανά.';
         errorMessage.classList.remove('hidden');
+      } finally {
         submitButton.disabled = false;
         submitButton.textContent = 'Είσοδος';
+        console.groupEnd();
       }
     });
 
