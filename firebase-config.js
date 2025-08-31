@@ -1,10 +1,4 @@
-// Import Firebase modules
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js';
-import { getStorage } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-storage.js';
-
-// Hardcoded Firebase config for static hosting
+// Using Firebase Compat version
 const firebaseConfig = {
   apiKey: "AIzaSyDhnrvGjy2UAzNwD0Q3cR-hxUbddxM2cks",
   authDomain: "cataloguenew-72ff8.firebaseapp.com",
@@ -14,7 +8,10 @@ const firebaseConfig = {
   appId: "1:830475889931:web:4a631d6e1d43936ead060e"
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export const storage = getStorage(app);
+// Initialize Firebase with compat version
+firebase.initializeApp(firebaseConfig);
+
+// Export Firebase services
+export const db = firebase.firestore();
+export const auth = firebase.auth();
+export const storage = firebase.storage();
