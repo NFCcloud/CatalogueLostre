@@ -17,26 +17,9 @@
     }
   </style>
   
-  <script>
-    const supabaseUrl = 'https://wwoejvzxdcrhxhdjeqqc.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b2Vqdnp4ZGNyaHhoZGplcXFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NTYzNzQsImV4cCI6MjA3MjIzMjM3NH0.xoKLN1_AyP-KG_x977PTiuumYlLtkk5-FM3LGaWhzdk';
-    
-    // Single instance of Supabase client
-    if (!window.supabaseClient) {
-      const { createClient } = supabase;
-      window.supabaseClient = createClient(supabaseUrl, supabaseKey);
-    }
-
-    // Enable more detailed error logging for Supabase operations
-    window.supabaseClient.handleFailure = (error) => {
-      console.error('Supabase Operation Failed:', {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
-      });
-      return error;
-    };
+  <script type="module">
+    import { supabase } from './supabase-config.js';
+    window.supabase = supabase;
   </script>
   <script src="./js/supabase-debug.js"></script>
 </head>
