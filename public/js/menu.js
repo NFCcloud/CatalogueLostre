@@ -105,7 +105,7 @@ class MenuManager {
 			return;
 		}
 
-		const subcategories = [...new Set(itemsToRender.map(item => item.subcategory))];
+		const subcategories = [...new Set(itemsToRender.map(item => item.subcategory || 'general'))];
 
 		subcategories.forEach(subcategory => {
 			const section = document.createElement('div');
