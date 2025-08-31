@@ -1,13 +1,5 @@
 
-import { db } from './firebase-config.js';
-import {
-	collection,
-	getDocs,
-	query,
-	where,
-	orderBy,
-	onSnapshot
-} from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js';
+import { supabase } from './supabase-config.js';
 
 class MenuManager {
 	constructor() {
