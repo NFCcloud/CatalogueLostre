@@ -23,6 +23,19 @@ async function testConnection() {
 // Helper function for file upload
 export async function uploadFile(file, bucket = 'menu-images') {
   try {
+    // Validate file type and size
+    if (!file.type.startsWith('image/')) {
+      const error = new Error('Μη έγκυρος τύπος αρχείου. Παρακαλώ επιλέξτε ένα αρχείο εικόνας.');
+      error.userMessage = error.message;
+      throw error;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      const error = new Error('Το μέγεθος της εικόνας πρέπει να είναι μικρότερο από 5MB');
+      error.userMessage = error.message;
+      throw error;
+    }
+
     // First check if bucket exists
     const { data: buckets, error: bucketError } = await supabase
       .storage

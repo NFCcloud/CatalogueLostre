@@ -1,4 +1,5 @@
 import { supabase, uploadFile } from './supabase-config.js';
+import { getCurrentSession, signOut } from './auth-supabase.js';
 
 const form = document.getElementById('addFoodForm');
 const menuItemsList = document.getElementById('menuItemsList');
@@ -198,8 +199,19 @@ async function renderMenuItems() {
   }
 }
 
-// Initial render and set up real-time subscription
-renderMenuItems();
+// Check authentication before initializing
+async function initializeAdmin() {
+  const session = await getCurrentSession();
+  if (!session) {
+    window.location.href = 'login-supabase.html';
+    return;
+  }
+
+  // Initial render and set up real-time subscription
+  renderMenuItems();
+}
+
+initializeAdmin();
 
 // Set up real-time subscription for menu updates
 const menuSubscription = supabase

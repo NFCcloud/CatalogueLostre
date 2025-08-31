@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Lostre</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <!-- Notification -->
+  <div id="notification" class="fixed top-4 right-4 max-w-md transform transition-transform duration-300 translate-x-full">
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg flex items-center">
+      <div class="flex-1">
+        <p id="notificationMessage" class="text-sm"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-md w-full px-6">
+    <div class="bg-white rounded-lg shadow-xl p-8">
+      <h2 class="text-2xl font-bold text-center mb-8">Είσοδος στο Διαχειριστικό</h2>
+      
+      <form id="loginForm" class="space-y-6">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            placeholder="admin@example.com"
+          >
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+            Κωδικός
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            placeholder="••••••••"
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Είσοδος
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { signIn } from './auth-supabase.js';
+
+    function showNotification(message, type = 'error') {
+      const notificationEl = document.getElementById('notification');
+      const messageEl = document.getElementById('notificationMessage');
+      const notificationBox = notificationEl.querySelector('div');
+      
+      messageEl.textContent = message;
+      
+      if (type === 'success') {
+        notificationBox.className = 'bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg flex items-center transform transition-all duration-300 ease-in-out';
+      } else {
+        notificationBox.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg flex items-center transform transition-all duration-300 ease-in-out';
+      }
+    
+      notificationEl.classList.remove('translate-x-full');
+      
+      setTimeout(() => {
+        notificationEl.classList.add('translate-x-full');
+      }, 3000);
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      try {
+        await signIn(email, password);
+        window.location.href = 'admin-supabase.html';
+      } catch (error) {
+        showNotification(error.message);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel</title>
+  <title>Admin Panel - Lostre</title>
   <link rel="stylesheet" href="admin.css">
   <!-- Use the production build of Tailwind CSS -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/typography@0.5.10/dist/typography.min.css"></script>
@@ -26,7 +26,12 @@
   </div>
 
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Διαχείριση Μενού</h1>
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold">Διαχείριση Μενού</h1>
+      <button id="logoutBtn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+        Αποσύνδεση
+      </button>
+    </div>
     
     <!-- Add/Edit Form -->
     <form id="addFoodForm" class="bg-white rounded-lg shadow-lg p-6 mb-8">
@@ -87,5 +92,17 @@
   </div>
 
   <script type="module" src="admin-supabase.js"></script>
+  <script type="module">
+    import { signOut } from './auth-supabase.js';
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await signOut();
+        window.location.href = 'login-supabase.html';
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
+    });
+  </script>
 </body>
 </html>
