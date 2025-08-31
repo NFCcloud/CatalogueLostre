@@ -17,17 +17,18 @@ import { db, storage } from './firebase-config.js';
 		// Update colors based on type
 		const notificationBox = notificationEl.querySelector('div');
 		if (type === 'success') {
-			notificationBox.className = 'bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg flex items-center';
+			notificationBox.className = 'bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-xl flex items-center transform transition-all duration-300 ease-in-out';
 		} else {
-			notificationBox.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg flex items-center';
+			notificationBox.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-xl flex items-center transform transition-all duration-300 ease-in-out';
 		}
 
-		// Show notification
-		notificationEl.classList.remove('translate-x-full');
+		// Add animation
+		notificationEl.classList.remove('translate-x-full', 'opacity-0');
+		notificationEl.classList.add('opacity-100');
 		
-		// Hide after 3 seconds
+		// Hide after 3 seconds with fade out
 		setTimeout(() => {
-			notificationEl.classList.add('translate-x-full');
+			notificationEl.classList.add('translate-x-full', 'opacity-0');
 		}, 3000);
 	}
 
@@ -78,23 +79,28 @@ import { db, storage } from './firebase-config.js';
 				editingId = null;
 				showNotification('Το πιάτο ενημερώθηκε επιτυχώς! 👍');
 			} else {
-				await addDoc(collection(db, 'menuItems'), {
-					name,
-					description,
-					price,
-					category,
-					imageUrl,
-					isActive: true,
-					sortOrder: Date.now(),
-					createdAt: serverTimestamp(),
-					updatedAt: serverTimestamp()
-				});
-				showNotification('Το πιάτο προστέθηκε επιτυχώς! ✨');
+				try {
+					await addDoc(collection(db, 'menuItems'), {
+						name,
+						description,
+						price,
+						category,
+						imageUrl,
+						isActive: true,
+						sortOrder: Date.now(),
+						createdAt: serverTimestamp(),
+						updatedAt: serverTimestamp()
+					});
+					showNotification('Το πιάτο προστέθηκε επιτυχώς! ✨');
+				} catch (addError) {
+					showErrorNotification('Σφάλμα κατά την προσθήκη του πιάτου: ' + addError.message);
+					return;
+				}
 			}
 			form.reset();
 			form.removeAttribute('data-edit-id');
 		} catch (error) {
-			alert('Σφάλμα κατά την αποθήκευση: ' + error.message);
+			showErrorNotification('Σφάλμα: ' + error.message);
 		}
 	});
 
@@ -127,6 +133,7 @@ import { db, storage } from './firebase-config.js';
 				if (confirm('Διαγραφή πιάτου;')) {
 					try {
 						await deleteDoc(doc(db, 'menuItems', id));
+						showNotification('Το πιάτο διαγράφηκε επιτυχώς! 🗑️');
 					} catch (err) {
 						showErrorNotification('Σφάλμα διαγραφής: ' + err.message);
 					}
@@ -138,7 +145,10 @@ import { db, storage } from './firebase-config.js';
 			btn.addEventListener('click', async (e) => {
 				const id = btn.getAttribute('data-edit');
 				const item = items.find(i => i.id === id);
-				if (!item) return;
+				if (!item) {
+					showErrorNotification('Το πιάτο δεν βρέθηκε.');
+					return;
+				}
 				document.getElementById('foodName').value = item.name;
 				document.getElementById('foodDescription').value = item.description;
 				document.getElementById('foodPrice').value = item.price;
@@ -146,6 +156,7 @@ import { db, storage } from './firebase-config.js';
 				editingId = id;
 				form.setAttribute('data-edit-id', id);
 				window.scrollTo({ top: 0, behavior: 'smooth' });
+				showNotification('Μπορείτε να επεξεργαστείτε το πιάτο. ✏️');
 			});
 		});
 	}
