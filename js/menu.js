@@ -72,16 +72,23 @@ class MenuManager {
       categorySection.className = 'mb-8 px-4';
       categorySection.innerHTML = `
         <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">
-          ${category}
+          ${this.formatCategoryTitle(category)}
         </h2>
-        <div class="grid gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       `;
 
       categoryItems.forEach(item => {
         const itemDiv = document.createElement('div');
-        itemDiv.className = 'bg-white rounded-lg shadow p-4 flex justify-between items-start';
+        itemDiv.className = 'bg-white rounded-lg shadow overflow-hidden';
+        
+        // Create the HTML structure with image
         itemDiv.innerHTML = `
-          <div class="flex-1">
+          ${item.image_url ? `
+            <div class="w-full h-48 overflow-hidden">
+              <img src="${item.image_url}" alt="${item.name}" class="w-full h-full object-cover">
+            </div>
+          ` : ''}
+          <div class="p-4">
             <div class="flex justify-between items-start mb-2">
               <h3 class="font-bold text-gray-800">${item.name}</h3>
               <span class="font-bold text-green-600 ml-4">€${parseFloat(item.price).toFixed(2)}</span>
