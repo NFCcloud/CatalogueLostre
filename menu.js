@@ -1,6 +1,4 @@
 
-import { supabase } from './supabase-config.js';
-
 class MenuManager {
 	constructor() {
 		this.menuItems = [];
@@ -20,7 +18,7 @@ class MenuManager {
 
 	async loadMenuItems() {
 		try {
-			const { data, error } = await supabase
+			const { data, error } = await window.supabase
 				.from('menu_items')
 				.select('*')
 				.eq('is_active', true)
@@ -41,7 +39,7 @@ class MenuManager {
 	}
 
 	setupRealTimeUpdates() {
-		const channel = supabase
+		const channel = window.supabase
 			.channel('menu_changes')
 			.on('postgres_changes', 
 				{

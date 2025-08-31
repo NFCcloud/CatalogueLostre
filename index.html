@@ -16,12 +16,16 @@
       50% { opacity: .5; }
     }
   </style>
-  
+
   <script>
-    import { supabase } from './supabase-config.js';
-    window.supabase = supabase;
+    // Initialize Supabase client
+    const SUPABASE_URL = 'https://wwoejvzxdcrhxhdjeqqc.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b2Vqdnp4ZGNyaHhoZGplcXFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NTYzNzQsImV4cCI6MjA3MjIzMjM3NH0.xoKLN1_AyP-KG_x977PTiuumYlLtkk5-FM3LGaWhzdk';
+    window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   </script>
+  
   <script src="./js/supabase-debug.js"></script>
+  <script type="module" src="./menu.js"></script>
 </head>
 <body class="bg-gray-50">
   <!-- Loading State -->
