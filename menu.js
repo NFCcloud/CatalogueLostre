@@ -19,35 +19,42 @@ class MenuManager {
 	}
 
 	async loadMenuItems() {
-		const menuRef = collection(db, 'menuItems');
-		const q = query(
-			menuRef,
-			where('isActive', '==', true),
-			orderBy('category'),
-			orderBy('sortOrder')
-		);
+		try {
+			const { data, error } = await supabase
+				.from('menu_items')
+				.select('*')
+				.eq('is_active', true)
+				.order('category')
+				.order('sort_order');
 
-		const snapshot = await getDocs(q);
-		this.menuItems = snapshot.docs.map(doc => ({
-			id: doc.id,
-			...doc.data()
-		}));
+			if (error) {
+				console.error('Error loading menu items:', error);
+				throw error;
+			}
 
-		this.renderMenu();
+			this.menuItems = data;
+			this.renderMenu();
+		} catch (error) {
+			console.error('Error in loadMenuItems:', error);
+			this.showError();
+		}
 	}
 
 	setupRealTimeUpdates() {
-		const menuRef = collection(db, 'menuItems');
-		const q = query(
-			menuRef,
-			where('isActive', '==', true),
-			orderBy('category'),
-			orderBy('sortOrder')
-		);
-
-		onSnapshot(q, (snapshot) => {
-			this.menuItems = snapshot.docs.map(doc => ({
-				id: doc.id,
+		const channel = supabase
+			.channel('menu_changes')
+			.on('postgres_changes', 
+				{
+					event: '*',
+					schema: 'public',
+					table: 'menu_items'
+				},
+				(payload) => {
+					this.loadMenuItems(); // Reload all items when any change occurs
+				}
+			)
+			.subscribe();
+	}
 				...doc.data()
 			}));
 			this.renderMenu();
