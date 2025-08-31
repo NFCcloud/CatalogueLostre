@@ -10,22 +10,8 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://unpkg.com/@tailwindcss/forms@0.2.1/dist/forms.min.css" rel="stylesheet">
   
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth-compat.js"></script>
-  
-  <!-- Initialize Firebase Auth -->
-  <script>
-    window.onload = function() {
-      // Sign in anonymously to allow Storage operations
-      firebase.auth().signInAnonymously()
-        .catch(function(error) {
-          console.error("Auth Error:", error);
-        });
-    }
-  </script>
+  <!-- Supabase JavaScript client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -73,7 +59,6 @@
     <div id="menuItemsList"></div>
   </div>
 </div>
-  <script type="module" src="firebase-config.js"></script>
-  <script type="module" src="admin.js"></script>
+  <script type="module" src="admin-supabase.js"></script>
 </body>
 </html>
