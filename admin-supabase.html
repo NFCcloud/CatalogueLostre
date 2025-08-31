@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="admin.css">
+  <!-- Use the production build of Tailwind CSS -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/typography@0.5.10/dist/typography.min.css"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/@tailwindcss/forms@0.2.1/dist/forms.min.css" rel="stylesheet">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Notification -->
+  <div id="notification" class="fixed top-4 right-4 max-w-md transform transition-transform duration-300 translate-x-full">
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg flex items-center">
+      <div class="flex-1">
+        <p id="notificationMessage" class="text-sm"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Διαχείριση Μενού</h1>
+    
+    <!-- Add/Edit Form -->
+    <form id="addFoodForm" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2" for="foodName">
+            Όνομα Πιάτου
+          </label>
+          <input type="text" id="foodName" name="foodName" required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2" for="foodCategory">
+            Κατηγορία
+          </label>
+          <input type="text" id="foodCategory" name="foodCategory" required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2" for="foodPrice">
+            Τιμή (€)
+          </label>
+          <input type="number" step="0.01" id="foodPrice" name="foodPrice" required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2" for="foodImage">
+            Εικόνα
+          </label>
+          <input type="file" id="foodImage" name="foodImage" accept="image/*"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2" for="foodDescription">
+            Περιγραφή
+          </label>
+          <textarea id="foodDescription" name="foodDescription" rows="3" required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <button type="submit"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          Αποθήκευση
+        </button>
+      </div>
+    </form>
+
+    <!-- Menu Items List -->
+    <div id="menuItemsList" class="space-y-4">
+      <!-- Items will be rendered here -->
+    </div>
+  </div>
+
+  <script type="module" src="admin-supabase.js"></script>
+</body>
+</html>
