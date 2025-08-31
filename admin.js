@@ -15,7 +15,36 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 	const form = document.getElementById('addFoodForm');
 	const menuItemsList = document.getElementById('menuItemsList');
+	const notification = document.getElementById('notification');
 	let editingId = null;
+
+	function showNotification(message, type = 'success') {
+		const notificationEl = document.getElementById('notification');
+		const messageEl = document.getElementById('notificationMessage');
+		
+		// Set message
+		messageEl.textContent = message;
+		
+		// Update colors based on type
+		const notificationBox = notificationEl.querySelector('div');
+		if (type === 'success') {
+			notificationBox.className = 'bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg flex items-center';
+		} else {
+			notificationBox.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg flex items-center';
+		}
+
+		// Show notification
+		notificationEl.classList.remove('translate-x-full');
+		
+		// Hide after 3 seconds
+		setTimeout(() => {
+			notificationEl.classList.add('translate-x-full');
+		}, 3000);
+	}
+
+	function showErrorNotification(message) {
+		showNotification(message, 'error');
+	}
 
 	form.addEventListener('submit', async (e) => {
 		e.preventDefault();
@@ -45,7 +74,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 				if (imageUrl) updateData.imageUrl = imageUrl;
 				await updateDoc(doc(db, 'menuItems', editingId), updateData);
 				editingId = null;
-				alert('Το πιάτο ενημερώθηκε!');
+				showNotification('Το πιάτο ενημερώθηκε επιτυχώς! 👍');
 			} else {
 				await addDoc(collection(db, 'menuItems'), {
 					name,
@@ -58,7 +87,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 					createdAt: serverTimestamp(),
 					updatedAt: serverTimestamp()
 				});
-				alert('Το πιάτο προστέθηκε!');
+				showNotification('Το πιάτο προστέθηκε επιτυχώς! ✨');
 			}
 			form.reset();
 			form.removeAttribute('data-edit-id');
@@ -97,7 +126,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 					try {
 						await deleteDoc(doc(db, 'menuItems', id));
 					} catch (err) {
-						alert('Σφάλμα διαγραφής: ' + err.message);
+						showErrorNotification('Σφάλμα διαγραφής: ' + err.message);
 					}
 				}
 			});

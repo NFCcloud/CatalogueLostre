@@ -12,8 +12,20 @@
   </style>
 </head>
 <body class="bg-gray-50">
+  <!-- Notification -->
+  <div id="notification" class="fixed top-4 right-4 max-w-md transform transition-transform duration-300 translate-x-full">
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg flex items-center">
+      <div class="flex-1">
+        <p class="font-medium" id="notificationMessage"></p>
+      </div>
+      <button onclick="this.parentElement.parentElement.classList.add('translate-x-full')" class="ml-4 text-green-600 hover:text-green-800">
+        ✕
+      </button>
+    </div>
+  </div>
+
   <div class="max-w-xl mx-auto py-8">
-    <h1 class="text-2xl font-bold mb-6 text-center">Διαχείριση Μεfdsafdsaffdasνού</h1>
+    <h1 class="text-2xl font-bold mb-6 text-center">Διαχείριση Μενού</h1>
     <form id="addFoodForm" class="bg-white rounded-lg shadow p-6 mb-8">
       <div class="mb-4">
         <label class="block mb-1 font-medium">Όνομα Πιάτου</label>
