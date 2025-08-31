@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Μενού Εστιατορίου</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+        <div class="max-w-md mx-auto px-4 py-4">
+            <h1 class="text-xl font-bold text-gray-800 text-center">Μενού</h1>
+        </div>
+    </div>
+
+    <!-- Menu Container -->
+    <div class="max-w-md mx-auto" id="menuContainer">
+        <!-- Menu items will be dynamically added here -->
+    </div>
+
+    <script>
+        // Menu data
+        const menuItems = [
+            {
+                id: 1,
+                category: 'Δημοφιλέστερα',
+                name: 'Γύρος χοιρινός σε πίτα',
+                description: 'Πίτα γύρος χοιρινός με τα υλικά της επιλογής σας',
+                price: 4.00,
+                image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop'
+            },
+            {
+                id: 2,
+                category: 'Δημοφιλέστερα',
+                name: 'Καλαμάκι κοτόπουλο στήθος',
+                description: '120gr. Χωρίς δέρμα. Συνοδεύεται από ψωμί εφτάζυμο φόρμας με λάδι & ρίγανη',
+                price: 2.70,
+                image: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=300&fit=crop'
+            },
+            {
+                id: 3,
+                category: 'Δημοφιλέστερα',
+                name: 'Γύρος κοτόπουλο σε πίτα',
+                description: 'Πίτα γύρος κοτόπουλο με τα υλικά της επιλογής σας',
+                price: 4.00,
+                image: 'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=400&h=300&fit=crop'
+            },
+            {
+                id: 4,
+                category: 'Δημοφιλέστερα',
+                name: 'Koto Best',
+                description: 'Σαλάτα με φιλέτο κοτόπουλο μαρινοπμένο σχάρας ή γύρο κοτόπουλο, μαρούλι, iceberg, λόλα πράσινη, λόλα κόκκινη, ντοματίνια, τρίχρωμες πιπεριές ξυδάτες, καλαμπόκι, flakes παρμεζάνα...',
+                price: 10.50,
+                image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop'
+            },
+            {
+                id: 5,
+                category: 'Ορεκτικά',
+                name: 'Τζατζίκι',
+                description: 'Παραδοσιακό τζατζίκι με ελληνικό γιαούρτι, αγγούρι και σκόρδο',
+                price: 3.50,
+                image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&h=300&fit=crop'
+            },
+            {
+                id: 6,
+                category: 'Κυρίως Πιάτα',
+                name: 'Μουσακάς',
+                description: 'Παραδοσιακός μουσακάς με μελιτζάνες, κιμά και μπεσαμέλ',
+                price: 12.00,
+                image: 'https://images.unsplash.com/photo-1621852004158-f3bc188ace2d?w=400&h=300&fit=crop'
+            },
+            {
+                id: 7,
+                category: 'Σαλάτες',
+                name: 'Χωριάτικη σαλάτα',
+                description: 'Ντομάτα, αγγούρι, κρεμμύδι, ελιές, φέτα, ελαιόλαδο',
+                price: 6.50,
+                image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=300&fit=crop'
+            },
+            {
+                id: 8,
+                category: 'Ποτά',
+                name: 'Φραπέ',
+                description: 'Παγωμένος ελληνικός καφές με αφρό',
+                price: 2.80,
+                image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=300&fit=crop'
+            }
+        ];
+
+        const categories = ['Δημοφιλέστερα', 'Ορεκτικά', 'Κυρίως Πιάτα', 'Σαλάτες', 'Ποτά'];
+
+        function renderMenu() {
+            const container = document.getElementById('menuContainer');
+            container.innerHTML = '';
+
+            categories.forEach(category => {
+                const categoryItems = menuItems.filter(item => item.category === category);
+                if (categoryItems.length === 0) return;
+
+                // Create category section
+                const categorySection = document.createElement('div');
+                categorySection.className = 'bg-white mb-4';
+                categorySection.innerHTML = `
+                    <div class="px-4 py-3 border-b border-gray-200">
+                        <h2 class="text-lg font-bold text-gray-800">${category}</h2>
+                    </div>
+                `;
+
+                // Add items to category
+                categoryItems.forEach((item, index) => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = `p-4 border-b border-gray-100 ${index === categoryItems.length - 1 ? '' : 'border-b'}`;
+                    itemDiv.innerHTML = `
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-800 mb-1">${item.name}</h3>
+                                <p class="text-sm text-gray-600 mb-2 leading-relaxed">${item.description}</p>
+                                <p class="text-lg font-bold text-blue-600">Από ${item.price.toFixed(2)}€</p>
+                            </div>
+                            <div>
+                                <img
+                                    src="${item.image}"
+                                    alt="${item.name}"
+                                    class="w-20 h-16 object-cover rounded-lg"
+                                    loading="lazy"
+                                />
+                            </div>
+                        </div>
+                    `;
+                    categorySection.appendChild(itemDiv);
+                });
+
+                container.appendChild(categorySection);
+            });
+        }
+
+        // Initialize menu when page loads
+        document.addEventListener('DOMContentLoaded', renderMenu);
+    </script>
+</body>
+</html>
