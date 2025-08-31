@@ -1,6 +1,6 @@
 
 // Import Firebase services
-import { db, storage, storageRef } from './firebase-config.js';
+import { db, storage } from './firebase-config.js';
 
 	const form = document.getElementById('addFoodForm');
 	const menuItemsList = document.getElementById('menuItemsList');
