@@ -1,4 +1,4 @@
-const supabase = window.supabaseClient;
+// Menu management class
 
 class MenuManager {
   constructor() {

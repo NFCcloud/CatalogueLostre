@@ -1,9 +1,8 @@
-const supabase = window.supabase;
-
 const supabaseUrl = 'https://wwoejvzxdcrhxhdjeqqc.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b2Vqdnp4ZGNyaHhoZGplcXFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NTYzNzQsImV4cCI6MjA3MjIzMjM3NH0.xoKLN1_AyP-KG_x977PTiuumYlLtkk5-FM3LGaWhzdk';
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Initialize the Supabase client globally
+window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 // Helper function for file upload
 export async function uploadFile(file, bucket = 'menu-images') {

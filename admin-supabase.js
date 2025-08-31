@@ -6,6 +6,89 @@ const menuItemsList = document.getElementById('menuItemsList');
 const notification = document.getElementById('notification');
 let editingId = null;
 
+function formatCategoryName(name) {
+  if (!name) return '';
+  return name
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+async function editItem(itemId) {
+  try {
+    const { data: item, error } = await supabase
+      .from('menu_items')
+      .select('*')
+      .eq('id', itemId)
+      .single();
+
+    if (error) throw error;
+
+    // Populate form with item data
+    document.getElementById('foodName').value = item.name;
+    document.getElementById('foodDescription').value = item.description || '';
+    document.getElementById('foodPrice').value = item.price;
+    document.getElementById('foodCategory').value = item.category;
+    
+    // Handle subcategory if it exists
+    const subcategoryContainer = document.getElementById('subcategoryContainer');
+    const subcategorySelect = document.getElementById('foodSubcategory');
+    
+    if (item.category === 'coffee_menu') {
+      subcategoryContainer.style.display = 'block';
+      subcategorySelect.value = item.subcategory || '';
+    } else {
+      subcategoryContainer.style.display = 'none';
+      subcategorySelect.value = '';
+    }
+
+    // Set editing state
+    editingId = itemId;
+    
+    // Scroll form into view
+    form.scrollIntoView({ behavior: 'smooth' });
+    
+    // Update submit button text
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.textContent = 'Ενημέρωση Προϊόντος';
+    }
+  } catch (error) {
+    console.error('Error loading item for edit:', error);
+    showErrorNotification('Σφάλμα φόρτωσης προϊόντος: ' + error.message);
+  }
+}
+
+async function deleteItem(itemId) {
+  try {
+    const result = await Swal.fire({
+      title: 'Είστε σίγουροι;',
+      text: "Δεν θα μπορείτε να το επαναφέρετε!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Ναι, διαγραφή',
+      cancelButtonText: 'Άκυρο'
+    });
+
+    if (result.isConfirmed) {
+      const { error } = await supabase
+        .from('menu_items')
+        .update({ is_active: false })
+        .eq('id', itemId);
+
+      if (error) throw error;
+
+      await renderMenuItems();
+      showNotification('Το προϊόν διαγράφηκε επιτυχώς');
+    }
+  } catch (error) {
+    console.error('Error deleting item:', error);
+    showErrorNotification('Σφάλμα διαγραφής: ' + error.message);
+  }
+}
+
 function showNotification(message, type = 'success') {
   const notificationEl = document.getElementById('notification');
   const messageEl = document.getElementById('notificationMessage');
@@ -41,12 +124,25 @@ form.addEventListener('submit', async (e) => {
   const description = document.getElementById('foodDescription').value.trim();
   const price = parseFloat(document.getElementById('foodPrice').value);
   const category = document.getElementById('foodCategory').value.trim();
+  const subcategory = document.getElementById('foodSubcategory').value.trim();
   const imageFile = document.getElementById('foodImage').files[0];
   
-  if (!name || !description || !category || isNaN(price) || (!imageFile && !editingId)) {
-    showErrorNotification('Παρακαλώ συμπληρώστε όλα τα απαραίτητα πεδία');
-    return;
-  }
+  try {
+    // Validate required fields
+    if (!name || !category || isNaN(price)) {
+      throw new Error('Παρακαλώ συμπληρώστε τα υποχρεωτικά πεδία (όνομα, κατηγορία, τιμή)');
+    }
+
+    // Prepare menu item data
+    const menuItem = {
+      name,
+      description,
+      price,
+      category,
+      subcategory: subcategory || null,
+      is_active: true,
+      sort_order: 999 // Will be updated later
+    };
 
   try {
     let imageUrl = null;
@@ -114,11 +210,37 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+// Handle category changes and update subcategory options
+document.getElementById('foodCategory').addEventListener('change', function(e) {
+  const category = e.target.value;
+  const subcategoryContainer = document.getElementById('subcategoryContainer');
+  const subcategorySelect = document.getElementById('foodSubcategory');
+  
+  if (category === 'coffee_menu') {
+    subcategoryContainer.style.display = 'block';
+    // Clear existing options
+    subcategorySelect.innerHTML = `
+      <option value="">Επιλέξτε υποκατηγορία</option>
+      <option value="coffee">Καφές</option>
+      <option value="extras">Extras</option>
+      <option value="juice">Χυμοί</option>
+      <option value="soft_drinks">Αναψυκτικά</option>
+      <option value="beverages">Ροφήματα</option>
+      <option value="tea">Τσάι</option>
+    `;
+  } else {
+    subcategoryContainer.style.display = 'none';
+    subcategorySelect.value = '';
+  }
+});
+
 async function renderMenuItems() {
   try {
     const { data: items, error } = await supabase
       .from('menu_items')
       .select('*')
+      .order('category')
+      .order('subcategory')
       .order('sort_order', { ascending: true });
     
     if (error) {
@@ -134,7 +256,87 @@ async function renderMenuItems() {
     if (error) throw error;
 
     menuItemsList.innerHTML = '';
+    
+    // Group items by category and subcategory
+    const groupedItems = items.reduce((acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = {};
+      }
+      
+      const subcategory = item.subcategory || 'other';
+      if (!acc[item.category][subcategory]) {
+        acc[item.category][subcategory] = [];
+      }
+      
+      acc[item.category][subcategory].push(item);
+      return acc;
+    }, {});
+
     if (!items || !items.length) {
+      menuItemsList.innerHTML = `
+        <div class="text-center py-8">
+          <p class="text-gray-500">Δεν υπάρχουν καταχωρημένα προϊόντα</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Render grouped items
+    function formatCategoryName(name) {
+      if (!name) return '';
+      return name
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    Object.entries(groupedItems).forEach(([category, subcategories]) => {
+      const categoryTitle = document.createElement('h2');
+      categoryTitle.className = 'text-xl font-bold mb-4 mt-8 text-gray-800 border-b pb-2';
+      categoryTitle.textContent = formatCategoryName(category);
+      menuItemsList.appendChild(categoryTitle);
+
+      Object.entries(subcategories).forEach(([subcategory, items]) => {
+        if (subcategory !== 'other') {
+          const subcategoryTitle = document.createElement('h3');
+          subcategoryTitle.className = 'text-lg font-semibold mb-3 ml-4 text-gray-700';
+          subcategoryTitle.textContent = formatCategoryName(subcategory);
+          menuItemsList.appendChild(subcategoryTitle);
+        }
+
+        const itemsGrid = document.createElement('div');
+        itemsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 ml-4';
+        
+        items.forEach(item => {
+          const itemCard = document.createElement('div');
+          itemCard.className = 'bg-white rounded-lg shadow-md p-4 flex flex-col justify-between';
+          itemCard.innerHTML = `
+            <div>
+              <div class="flex justify-between items-start mb-2">
+                <h4 class="font-semibold text-gray-800">${item.name}</h4>
+                <span class="text-green-600 font-bold">€${item.price.toFixed(2)}</span>
+              </div>
+              ${item.description ? `<p class="text-sm text-gray-600 mb-2">${item.description}</p>` : ''}
+            </div>
+            <div class="flex justify-end gap-2 mt-3">
+              <button onclick="editItem('${item.id}')" class="text-blue-500 hover:text-blue-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </button>
+              <button onclick="deleteItem('${item.id}')" class="text-red-500 hover:text-red-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          `;
+          itemsGrid.appendChild(itemCard);
+        });
+
+        menuItemsList.appendChild(itemsGrid);
+      });
+    });
       menuItemsList.innerHTML = '<div class="text-center text-gray-500">Δεν υπάρχουν πιάτα στο μενού.</div>';
       return;
     }
