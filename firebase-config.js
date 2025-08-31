@@ -11,7 +11,15 @@ const firebaseConfig = {
 // Initialize Firebase with compat version
 firebase.initializeApp(firebaseConfig);
 
+// Configure Storage with CORS settings
+const storage = firebase.storage();
+storage.setCustomAuthHeaders({
+  'Access-Control-Allow-Origin': 'https://nfccloud.github.io',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+  'Access-Control-Allow-Headers': 'Content-Type'
+});
+
 // Export Firebase services
 export const db = firebase.firestore();
 export const auth = firebase.auth();
-export const storage = firebase.storage();
+export { storage };
