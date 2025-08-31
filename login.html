@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Είσοδος στο Διαχειριστικό - Lostre</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     body { font-family: 'Inter', sans-serif; }
@@ -27,8 +27,8 @@
             id="email"
             name="email"
             required
+            value="dpsd18108@aegean.gr"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            placeholder="admin@example.com"
           >
         </div>
 
@@ -41,8 +41,8 @@
             id="password"
             name="password"
             required
+            value="admin"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            placeholder="••••••••"
           >
         </div>
 
@@ -60,53 +60,71 @@
   </div>
 
   <script type="module">
-    import { supabase } from '/js/supabase-config.js';
+    const SUPABASE_URL = 'https://wwoejvzxdcrhxhdjeqqc.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3b2Vqdnp4ZGNyaHhoZGplcXFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NTYzNzQsImV4cCI6MjA3MjIzMjM3NH0.xoKLN1_AyP-KG_x977PTiuumYlLtkk5-FM3LGaWhzdk';
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const form = document.getElementById('loginForm');
     const errorMessage = document.getElementById('errorMessage');
+    const submitButton = document.querySelector('button[type="submit"]');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const email = form.email.value;
-      const password = form.password.value;
+      // Clear previous error
+      errorMessage.classList.add('hidden');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Παρακαλώ περιμένετε...';
       
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: form.email.value,
+          password: form.password.value
         });
 
-        if (error) throw error;
+        if (error) {
+          throw error;
+        }
 
         if (data.user) {
-          // Check if user has admin access
-          const { data: profile, error: profileError } = await supabase
+          // Check if user is admin
+          const { data: profile, error: profileError } = await supabaseClient
             .from('profiles')
             .select('role')
             .eq('id', data.user.id)
             .single();
 
-          if (profileError) throw profileError;
-
-          if (profile?.role !== 'admin') {
+          if (profileError || profile?.role !== 'admin') {
             throw new Error('Δεν έχετε δικαιώματα πρόσβασης στο διαχειριστικό.');
           }
 
           // Successful login - redirect to admin panel
-          window.location.href = '/admin.html';
+          window.location.href = 'admin.html';
         }
       } catch (error) {
+        console.error('Login error:', error);
         errorMessage.textContent = error.message || 'Σφάλμα κατά την είσοδο. Παρακαλώ δοκιμάστε ξανά.';
         errorMessage.classList.remove('hidden');
+        submitButton.disabled = false;
+        submitButton.textContent = 'Είσοδος';
       }
     });
 
     // Check if already logged in
     async function checkAuth() {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (session) {
-        window.location.href = '/admin.html';
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await supabaseClient
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile?.role === 'admin') {
+          window.location.href = 'admin.html';
+        }
       }
     }
 
