@@ -51,10 +51,20 @@ form.addEventListener('submit', async (e) => {
     let imageUrl = null;
     if (imageFile) {
       try {
+        // Check file size
+        if (imageFile.size > 5 * 1024 * 1024) { // 5MB limit
+          throw new Error('Το μέγεθος της εικόνας πρέπει να είναι μικρότερο από 5MB');
+        }
+
+        // Check file type
+        if (!imageFile.type.startsWith('image/')) {
+          throw new Error('Παρακαλώ επιλέξτε ένα αρχείο εικόνας');
+        }
+
         imageUrl = await uploadFile(imageFile);
         showNotification('Η εικόνα ανέβηκε επιτυχώς! 🖼️');
       } catch (uploadError) {
-        showErrorNotification('Σφάλμα κατά το ανέβασμα της εικόνας: ' + uploadError.message);
+        showErrorNotification(uploadError.userMessage || 'Σφάλμα κατά το ανέβασμα της εικόνας: ' + uploadError.message);
         return;
       }
     }

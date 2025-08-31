@@ -23,25 +23,49 @@ async function testConnection() {
 // Helper function for file upload
 export async function uploadFile(file, bucket = 'menu-images') {
   try {
-    const timestamp = Date.now()
-    const fileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
-    const { data, error } = await supabase.storage
+    // First check if bucket exists
+    const { data: buckets, error: bucketError } = await supabase
+      .storage
+      .listBuckets();
+
+    if (bucketError) throw bucketError;
+
+    const bucketExists = buckets.some(b => b.name === bucket);
+    if (!bucketExists) {
+      throw new Error('Storage bucket not found. Please ensure the bucket is created in Supabase dashboard.');
+    }
+
+    // Prepare file for upload
+    const timestamp = Date.now();
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${timestamp}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+    
+    // Upload file
+    const { data, error: uploadError } = await supabase.storage
       .from(bucket)
       .upload(fileName, file, {
         cacheControl: '3600',
-        upsert: false
-      })
+        upsert: true,
+        contentType: file.type
+      });
     
-    if (error) throw error
+    if (uploadError) throw uploadError;
     
     // Get public URL
-    const { data: { publicUrl } } = supabase.storage
+    const { data: { publicUrl }, error: urlError } = supabase.storage
       .from(bucket)
-      .getPublicUrl(fileName)
+      .getPublicUrl(fileName);
     
-    return publicUrl
+    if (urlError) throw urlError;
+    
+    return publicUrl;
   } catch (error) {
-    console.error('Error uploading file:', error)
-    throw error
+    console.error('Error uploading file:', error);
+    if (error.message.includes('bucket not found')) {
+      error.userMessage = 'Ο χώρος αποθήκευσης δεν έχει ρυθμιστεί σωστά. Παρακαλώ επικοινωνήστε με τον διαχειριστή.';
+    } else {
+      error.userMessage = 'Σφάλμα κατά το ανέβασμα του αρχείου. Παρακαλώ δοκιμάστε ξανά.';
+    }
+    throw error;
   }
 }
