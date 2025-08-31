@@ -55,12 +55,6 @@ class MenuManager {
 			)
 			.subscribe();
 	}
-				...doc.data()
-			}));
-			this.renderMenu();
-		}, (error) => {
-			console.error('Real-time update error:', error);
-		});
 	}
 
 	renderMenu() {
