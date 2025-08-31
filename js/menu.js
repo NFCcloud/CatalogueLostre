@@ -105,6 +105,17 @@ class MenuManager {
     });
   }
 
+  formatCategoryTitle(category) {
+    const titles = {
+      'salads': 'Σαλάτες',
+      'pizzas': 'Πίτσες',
+      'brunch': 'Brunch',
+      'sweet_pancakes': 'Γλυκές Κρέπες',
+      'desserts': 'Επιδόρπια'
+    };
+    return titles[category] || category;
+  }
+
   showEmptyState() {
     const container = document.getElementById('menuContainer');
     container.innerHTML = `
